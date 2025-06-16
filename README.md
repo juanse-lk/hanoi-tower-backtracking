@@ -30,9 +30,12 @@ Cada estado generado se guarda como un nodo de un grafo dirigido, que puede visu
 Ejemplo:
   
   ![Ejecucion de 3 dicos fragiles con la cantidad de movimientos minima para que se resuelva](img/tresDiscosFragiles.svg)
-
+  *Ejecucion de 3 dicos fragiles con la cantidad de movimientos minima para que se resuelva*
+  
 Ejemplo 2:
   ![Ejecucion de 2 dicos comunes (No hay limite de movimientos)](img/dosDiscosComunes.svg)
+
+  *Ejecucion de 2 dicos comunes (No hay limite de movimientos)*
 ---
 
 ## 🧪 Requisitos
