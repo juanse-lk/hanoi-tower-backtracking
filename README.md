@@ -27,6 +27,13 @@ Cada estado generado se guarda como un nodo de un grafo dirigido, que puede visu
 - `Disco` y `DiscoFragil`: clases que modelan los discos normales y los discos frágiles respectivamente.
 
 ---
+Ejemplo:
+  
+  ![Ejecucion de 3 dicos fragiles con la cantidad de movimientos minima para que se resuelva](img/tresDiscosFragiles.svg)
+
+Ejemplo 2:
+  ![Ejecucion de 2 dicos comunes (No hay limite de movimientos)](img/dosDiscosComunes.svg)
+---
 
 ## 🧪 Requisitos
 
