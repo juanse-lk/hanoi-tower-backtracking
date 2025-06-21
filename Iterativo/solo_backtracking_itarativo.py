@@ -88,7 +88,7 @@ def hanoi_iterativo(torres_iniciales, total_discos):
             disco.mover()
 
             nuevo_movimiento = (origen, destino, disco.tamanio)
-            nueva_lista = movimientos + [nuevo_movimiento]
+            historial_movimeintos = movimientos + [nuevo_movimiento]
             nuevo_estado = estado_serializado(nuevas_torres)
 
             if nuevo_estado in visitados_en_rama:
@@ -96,7 +96,7 @@ def hanoi_iterativo(torres_iniciales, total_discos):
 
             nueva_rama_visitados = visitados_en_rama.copy()
             nueva_rama_visitados.add(nuevo_estado)
-            nodos_vivos.append((nuevas_torres, nueva_lista, nueva_rama_visitados))
+            nodos_vivos.append((nuevas_torres, historial_movimeintos, nueva_rama_visitados))
 
     return soluciones
 
