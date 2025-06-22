@@ -47,6 +47,7 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados)
 
     if len(torres["Destino"]) == total_discos:
         soluciones.append(list(movimientos))
+        visitados.remove(estado_actual)
         return
 
     for origen in torres:
@@ -72,7 +73,7 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados)
                 total_discos,
                 movimientos,
                 soluciones,
-                visitados.copy()  # copiar visitados para mantener independencia por camino
+                visitados # copiar visitados para mantener independencia por camino
             )
 
             # Deshacer movimiento
@@ -80,3 +81,34 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados)
             torres[destino].pop()
             disco.deshacer_movimiento()
             torres[origen].append(disco)
+
+    visitados.remove(estado_actual)
+
+
+if __name__ == "__main__":
+    total_discos = 3
+    torres_iniciales = {
+        "Origen": [Disco(3), DiscoFragil(2,500), DiscoFragil(1,500)],
+        "Auxiliar": [],
+        "Destino": []
+    }
+    # --- Prueba solo backtracking
+
+    soluciones = []
+    visitados = set()
+
+    hanoi_backtracking(torres_iniciales, total_discos, [], soluciones, visitados)
+
+    print("-----------  SOLO BACKTRACKING ------------")
+    print(f"\n Total de soluciones encontradas: {len(soluciones)}")
+
+
+    
+soluciones.sort(key=len, reverse=True)
+# Mostrar soluciones
+for i, solucion in enumerate(soluciones, 1):
+    print(f"\n🔹 Solución {i} ({len(solucion)} movimientos):")
+    for mov in solucion:
+        print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
+
+print(f"\n Total de soluciones encontradas: {len(soluciones)}")
