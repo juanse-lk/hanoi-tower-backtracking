@@ -8,9 +8,6 @@ class Disco:
     def mover(self):
         pass
 
-    def deshacer_movimiento(self):
-        pass
-
 
 class DiscoFragil(Disco):
     def __init__(self, tamanio, max_movimientos):
@@ -24,24 +21,46 @@ class DiscoFragil(Disco):
     def mover(self):
         self.movimientos_realizados += 1
 
-    def deshacer_movimiento(self):
-        self.movimientos_realizados -= 1
-
 
 def estado_serializado(torres):
+    """
+    Guarda el estado actual de las torres en una tupla.
+    
+    Cada torre ("Origen", "Auxiliar", "Destino") se recorre en orden. 
+    Se agrega un separador (0) antes de cada torre excepto la primera.
+    Luego, se agregan los tamaños de los discos de cada torre.
+
+    Args:
+        torres (dict): Diccionario con las torres como claves y lista de discos como valores.
+
+    Returns:
+        tuple: Representación del estado de las torres.
+    """
     estado = []
-    for nombre in ["Origen", "Auxiliar", "Destino"]:
-        if nombre != "Origen":
+    for torre in ["Origen", "Auxiliar", "Destino"]:
+        if torre != "Origen":
             estado.append(0)  # Separador entre torres
-        for d in torres[nombre]:
-            estado.append(d.tamanio)
+        for disco in torres[torre]:
+            estado.append(disco.tamanio)
     return tuple(estado)
 
 def copiar_torres(torres):
+    """
+    Crea una copia de las torres y sus discos.
+
+    Args:
+        torres (dict): Un diccionario donde las claves representan las torres y los valores son listas de objetos Disco o DiscoFragil.
+
+    Returns:
+        nuevas_torres (dict): Un nuevo diccionario con copias independientes de las listas de discos.
+
+    Nota:
+        - Si un disco es de tipo DiscoFragil, también se copia el número de movimientos realizados.
+    """
     nuevas_torres = {}
-    for clave, pila in torres.items():
+    for clave, pila in torres.items(): 
         nueva_pila = []
-        for disco in pila:
+        for disco in pila: 
             if isinstance(disco, DiscoFragil):
                 nuevo_disco = DiscoFragil(disco.tamanio, disco.max_movimientos)
                 nuevo_disco.movimientos_realizados = disco.movimientos_realizados
@@ -52,6 +71,20 @@ def copiar_torres(torres):
     return nuevas_torres
 
 def generar_movimientos_posibles(torres):
+    """
+    Genera una lista de movimientos posibles para los discos en las torres de Hanoi.
+
+    Recorre todas las torres y para cada disco en la cima de una torre, verifica si puede moverse a otra torre
+    siguiendo las reglas del juego (no se puede colocar un disco grande sobre uno más pequeño y solo se puede mover
+    el disco superior de cada torre). Devuelve una lista de tuplas que representan los movimientos válidos.
+
+    Args:
+        torres (dict): Un diccionario donde las claves son los nombres de las torres y los valores son listas de discos,
+                       siendo el último elemento de la lista el disco en la cima.
+
+    Returns:
+        list: Una lista de tuplas (origen, destino, disco) que representan los movimientos posibles.
+    """
     movimientos = []
     for origen in torres:
         if not torres[origen]:
@@ -68,6 +101,19 @@ def generar_movimientos_posibles(torres):
     return movimientos
 
 def hanoi_iterativo(torres_iniciales, total_discos):
+    """
+    Resuelve el problema de la Torre de Hanoi de forma iterativa usando backtracking.
+    Solo se puede mover un disco a la vez y no se puede colocar un disco grande sobre uno más pequeño.
+    Args:
+        torres_iniciales (dict): Un diccionario que representa el estado inicial de las torres. 
+        Cada clave es el nombre de una torre (por ejemplo, "Origen", "Auxiliar", "Destino"),
+        y cada valor es una lista de objetos disco.
+        total_discos (int): El número total de discos a mover.
+    Returns:
+        list: Una lista de soluciones, donde cada solución es una lista de movimientos. 
+        Cada movimiento se representa como una tupla (origen, destino, tamaño),
+        indicando la torre de origen, la torre de destino y el tamaño del disco movido.
+    """
     soluciones = []
     nodos_vivos = [] 
 
