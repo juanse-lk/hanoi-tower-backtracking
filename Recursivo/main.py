@@ -4,7 +4,7 @@ import tracemalloc
 from ramificacion_y_poda import hanoi_backtracking as ramificacion_y_poda
 from solo_poda import hanoi_backtracking as solo_poda
 from solo_ramificacion import hanoi_backtracking as solo_ramificacion
-from solo_backtracking import hanoi_backtracking as solo_backtracking
+from Recursivo.Backtracking.e1_backtracking_estados_visitados import hanoi_backtracking as solo_backtracking
 
 
 class Disco:

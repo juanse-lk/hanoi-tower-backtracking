@@ -84,18 +84,16 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados)
         # Intentar mover el disco a cada torre de destino
         for destino in torres:
             # No mover el disco a la misma torre de origen
-            if origen == destino:
-                continue
-            # No mover a una torre que ya tiene un disco más grande en la parte superior
-            if torres[destino] and torres[destino][-1].tamanio < disco.tamanio:
-                continue
             # No mover si el disco no puede moverse
-            if not disco.puede_moverse():
-                continue
+            # No mover a una torre que ya tiene un disco más grande en la parte superior
             # Evitar mover el mismo disco en dos turnos seguidos
-            if movimientos and disco.tamanio == movimientos[-1][2]:
-                continue 
-
+            if (
+            origen == destino or
+            not disco.puede_moverse() or
+            (torres[destino] and torres[destino][-1].tamanio < disco.tamanio) or
+            (movimientos and disco.tamanio == movimientos[-1][2])
+            ):
+                continue
 
             # Mover disco
             torres[origen].pop()
