@@ -38,16 +38,16 @@ def estado_serializado(torres):
     return tuple(estado)
 
 
-def hanoi_backtracking(torres, total_discos, movimientos, soluciones, max_movimientos_permitidos):
-    if soluciones:
-        return
-    
-    if len(movimientos) > max_movimientos_permitidos:
-        return  # Corte por exceso de movimientos
+def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados, encontrar_una=False):
+    estado_actual = estado_serializado(torres)
+
+    if estado_actual in visitados:
+        return False
+    visitados.add(estado_actual)
 
     if len(torres["Destino"]) == total_discos:
         soluciones.append(list(movimientos))
-        return
+        return True  # Indica que se encontró una solución
 
     for origen in torres:
         if not torres[origen]:
@@ -61,52 +61,44 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, max_movimi
             if not disco.puede_moverse():
                 continue
 
-            # Mover disco
+            # Realizar movimiento
             torres[origen].pop()
             torres[destino].append(disco)
             disco.mover()
             movimientos.append((origen, destino, disco.tamanio))
 
-            hanoi_backtracking(
-                torres,
-                total_discos,
-                movimientos,
-                soluciones,
-                max_movimientos_permitidos
-            )
+            # Llamada recursiva
+            if hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados, encontrar_una):
+                if encontrar_una:  # Si solo queremos una solución, retornamos inmediatamente
+                    return True
 
-            # Deshacer movimiento
+            # Deshacer movimiento (backtracking)
             movimientos.pop()
             torres[destino].pop()
             disco.deshacer_movimiento()
             torres[origen].append(disco)
 
+    visitados.remove(estado_actual)
+    return False
+
 
 if __name__ == "__main__":
-    total_discos = 6
-    max_movimientos = (2 ** total_discos) + 50
+    total_discos = 3
     torres_iniciales = {
-        "Origen": [Disco(6),Disco(5),Disco(4), Disco(3), DiscoFragil(2,max_movimientos), DiscoFragil(1,max_movimientos)],
+        "Origen": [Disco(3), Disco(2), Disco(1)],
         "Auxiliar": [],
         "Destino": []
     }
-    # --- Prueba solo backtracking
 
     soluciones = []
     visitados = set()
-    
-    hanoi_backtracking(torres_iniciales, total_discos, [], soluciones, max_movimientos)
 
-    print("-----------  SOLO BACKTRACKING ------------")
-    print(f"\n Total de soluciones encontradas: {len(soluciones)}")
+    hanoi_backtracking(torres_iniciales, total_discos, [], soluciones, visitados, encontrar_una=True)
 
-
-    
-soluciones.sort(key=len, reverse=True)
-# Mostrar soluciones
-# for i, solucion in enumerate(soluciones, 1):
-#     print(f"\n🔹 Solución {i} ({len(solucion)} movimientos):")
-for mov in soluciones[-1]:
-    print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
-
-print(f"\n Total de soluciones encontradas: {len(soluciones)}")
+    print("-----------  BACKTRACKING: UNA SOLUCIÓN ------------")
+    if soluciones:
+        print(f"\n✅ Solución encontrada con {len(soluciones[0])} movimientos:")
+        for mov in soluciones[0]:
+            print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
+    else:
+        print("❌ No se encontró ninguna solución.")
