@@ -86,12 +86,16 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados)
             # No mover el disco a la misma torre de origen
             if origen == destino:
                 continue
-            # No moever a una torre que ya tiene un disco más grande en la parte superior
+            # No mover a una torre que ya tiene un disco más grande en la parte superior
             if torres[destino] and torres[destino][-1].tamanio < disco.tamanio:
                 continue
             # No mover si el disco no puede moverse
             if not disco.puede_moverse():
                 continue
+            # Evitar mover el mismo disco en dos turnos seguidos
+            if movimientos and disco.tamanio == movimientos[-1][2]:
+                continue 
+
 
             # Mover disco
             torres[origen].pop()
@@ -119,9 +123,9 @@ def hanoi_backtracking(torres, total_discos, movimientos, soluciones, visitados)
 
 
 if __name__ == "__main__":
-    total_discos = 3
+    total_discos = 2
     torres_iniciales = {
-        "Origen": [Disco(3), DiscoFragil(2,500), DiscoFragil(1,500)],
+        "Origen": [Disco(2), Disco(1)],
         "Auxiliar": [],
         "Destino": []
     }
@@ -131,17 +135,21 @@ if __name__ == "__main__":
     visitados = set()
 
     hanoi_backtracking(torres_iniciales, total_discos, [], soluciones, visitados)
-
+    
     print("-----------  SOLO BACKTRACKING ------------")
     print(f"\n Total de soluciones encontradas: {len(soluciones)}")
 
 
-    
-soluciones.sort(key=len, reverse=True)
-# Mostrar soluciones
-for i, solucion in enumerate(soluciones, 1):
-    print(f"\n🔹 Solución {i} ({len(solucion)} movimientos):")
-    for mov in solucion:
-        print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
+        
+    soluciones.sort(key=len, reverse=True)
+    # # Mostrar soluciones
+    # for i, solucion in enumerate(soluciones, 1):
+    #     print(f"\n🔹 Solución {i} ({len(solucion)} movimientos):")
+    #     for mov in solucion:
+    #         print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
+    # Mostrar cantidad de movimientos de cada solución
+    print("\n🔍 Resumen de soluciones:")
+    for i, solucion in enumerate(soluciones, 1):
+        print(f"🔹 Solución {i}: {len(solucion)} movimientos")
 
-print(f"\n Total de soluciones encontradas: {len(soluciones)}")
+    print(f"\n Total de soluciones encontradas: {len(soluciones)}")
