@@ -133,15 +133,30 @@ def hanoi_branch_and_bound(torres_iniciales):
 # 🔽 Ejemplo de uso:
 
 if __name__ == "__main__":
+
+    import time
+    import tracemalloc
     # Crear torres con 3 discos en "Origen"
     torres = {
-        "Origen": [Disco(6), Disco(5), Disco(4),Disco(3), Disco(2), DiscoFragil(1,100)],
+        "Origen": [Disco(5),Disco(4),Disco(3),Disco(2), DiscoFragil(1,64)],
         "Auxiliar": [],
         "Destino": [],
     }
+    # ⏱️ Inicio de medición
+    tracemalloc.start()
+    inicio = time.time()
 
     solucion = hanoi_branch_and_bound(torres)
 
-    print("Mejor solución encontrada:")
-    for i, mov in enumerate(solucion, 1):
-        print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
+    # print("Mejor solución encontrada:")
+    # for i, mov in enumerate(solucion, 1):
+    #     print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
+    # ⏱️ Fin de medición
+    fin = time.time()
+    mem_actual, mem_pico = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+
+    print(f"\n🕒 Tiempo de ejecución: {fin - inicio:.4f} segundos")
+    print(f"📈 Memoria actual usada: {mem_actual / 1024:.2f} KB")
+    print(f"🚀 Pico de memoria: {mem_pico / 1024:.2f} KB")
