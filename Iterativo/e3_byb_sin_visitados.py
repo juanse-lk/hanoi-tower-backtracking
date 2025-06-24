@@ -72,12 +72,26 @@ def generar_movimientos_posibles(torres):
 
 def heuristica(torres, cantidad_discos):
     """
-    Heurística simple: cantidad de discos que NO están en la torre de destino.
+    Heurística simple: Cantidad de discos que NO están en la torre de destino.
+    Args:
+        torres (dict): Estado actual de las torres.
+        cantidad_discos (int): Cantidad de discos total.
+    Returns:
+        int: Número de discos que aún no están en la torre destino.
     """
     return  cantidad_discos - len(torres['Destino'])
 
 
 def hanoi_branch_and_bound(torres_iniciales):
+    """
+    Resuelve el problema de la Torre de Hanoi utilizando el algoritmo de Branch and Bound.
+    Args:
+        torres_iniciales (dict): Diccionario con las torres iniciales
+    Returns:
+        list: Una lista de tuplas representando la secuencia de movimientos óptima. Cada tupla es de la forma
+              (origen, destino, tamanio_disco), donde 'origen' y 'destino' son los nombres de las torres y
+              'tamanio_disco' es el tamaño del disco movido. Si no se encuentra solución, retorna None.
+    """
     total_discos = len(torres_iniciales['Origen'])
     nodos_vivos = []
     nodo_raiz = (heuristica(torres_iniciales, total_discos), copiar_torres(torres_iniciales), [])
