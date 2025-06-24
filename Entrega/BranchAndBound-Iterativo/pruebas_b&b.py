@@ -88,10 +88,10 @@ if __name__ == "__main__":
     }
 
     # Ejecutar Estrategia 1
-    # probar_estrategia("Estrategia 1 - Heurística Simple", estrategia_1, torres_iniciales)
+    probar_estrategia("Estrategia 1 - Heurística Simple", estrategia_1, torres_iniciales)
 
     # Ejecutar Estrategia 2
     probar_estrategia("Estrategia 2 - Heurística Mejorada", estrategia_2, torres_iniciales)
 
     # Ejecutar Estrategia 3
-    # probar_estrategia("Estrategia 3 - Sin visitados", estrategia_3, torres_iniciales)
+    probar_estrategia("Estrategia 3 - Sin visitados", estrategia_3, torres_iniciales)
