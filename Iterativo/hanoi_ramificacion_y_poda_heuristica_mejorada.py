@@ -70,7 +70,7 @@ def generar_movimientos_posibles(torres):
     return movimientos
 
 
-def heuristica(torres, cantidad_discos):
+def heuristica(torres):
     """
     Heurística ponderada combinada:
     - Para cada disco de tamaño i:
