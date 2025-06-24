@@ -268,71 +268,148 @@ def hanoi_backtracking_solucion_unica(torres, total_discos, movimientos, solucio
     # Desmarcar el estado actual como visitado
     visitados.remove(estado_actual)
 
+def hanoi_backtracking_estados_visitados(torres, total_discos, movimientos, soluciones, visitados):
+    """
+    Resuelve el problema de la Torre de Hanoi utilizando backtracking, almacenando todas las soluciones posibles.
+    
+    Args:
+        torres (dict): Diccionario con las torres como claves y listas de discos como valores.
+        total_discos (int): Número total de discos a mover.
+        movimientos (list): Lista de movimientos realizados hasta el momento, cada uno como una tupla (origen, destino, tamaño).
+        soluciones (list): Lista donde se almacenan todas las soluciones encontradas, cada una como una lista de movimientos.
+        visitados (set): Conjunto de estados serializados ya visitados para evitar ciclos y repeticiones.
+    Returns:
+        None: Las soluciones se almacenan en el parámetro 'soluciones' pasado por referencia.
+    """
+    estado_actual = estado_serializado(torres)
+
+    # Verificar si el estado actual ya fue visitado
+    if estado_actual in visitados:
+        return
+    # Marcar el estado actual como visitado
+    visitados.add(estado_actual)
+
+    # Verificar si se ha alcanzado la solución
+    if len(torres["Destino"]) == total_discos:
+        soluciones.append(list(movimientos))
+        visitados.remove(estado_actual)
+        return
+
+    # Intentar mover discos entre torres
+    for origen in torres:
+        # Si la torre de origen está vacía, no hay disco para mover
+        if not torres[origen]:
+            continue
+        # Tomar el disco superior de la torre de origen
+        disco = torres[origen][-1]
+        # Intentar mover el disco a cada torre de destino
+        for destino in torres:
+            # No mover el disco a la misma torre de origen
+            if origen == destino:
+                continue
+            # No moever a una torre que ya tiene un disco más grande en la parte superior
+            if torres[destino] and torres[destino][-1].tamanio < disco.tamanio:
+                continue
+            # No mover si el disco no puede moverse
+            if not disco.puede_moverse():
+                continue
+
+            # Mover disco
+            torres[origen].pop()
+            torres[destino].append(disco)
+            disco.mover()
+
+            # Registrar el movimiento
+            movimientos.append((origen, destino, disco.tamanio))
+
+            hanoi_backtracking_estados_visitados(
+                torres,
+                total_discos,
+                movimientos,
+                soluciones,
+                visitados
+            )
+
+            # Deshacer movimiento
+            movimientos.pop()
+            torres[destino].pop()
+            disco.deshacer_movimiento()
+            torres[origen].append(disco)
+    # Desmarcar el estado actual como visitado
+    visitados.remove(estado_actual)
 
 # 🔽 Ejemplo de uso:
-total_discos = 5
+total_discos = 3
 if __name__ == "__main__":
-    """
-    # Crear torres con 3 discos en "Origen"
-    torres = {
-        "Origen": [Disco(5), Disco(4),Disco(3), Disco(2), DiscoFragil(1,100)],
-        "Auxiliar": [],
-        "Destino": [],
-    }
-    
-    solucion = hanoi_branch_and_bound_sin_visitados(torres)
-
-    print("Mejor solución encontrada SIN VISITADOS:")
-    for i, mov in enumerate(solucion, 1):
-        print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
-    """
-    
     import time
     import tracemalloc
-    # Crear torres con 3 discos en "Origen"
+
     torres_iniciales = {
-        "Origen": [Disco(5),Disco(4),Disco(3),Disco(2), DiscoFragil(1,64)],
+        "Origen": [Disco(3),Disco(2), DiscoFragil(1,64)],
         "Auxiliar": [],
         "Destino": [],
     }
-    
-    """
-    # ⏱️ Inicio de medición
-    tracemalloc.start()
-    inicio = time.time()
 
-    solucion = hanoi_branch_and_bound_estados_visitados(torres_iniciales)
-
-    # print("Mejor solución encontrada:")
-    # for i, mov in enumerate(solucion, 1):
-    #     print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
-    # ⏱️ Fin de medición
-    fin = time.time()
-    mem_actual, mem_pico = tracemalloc.get_traced_memory()
-    tracemalloc.stop()
-
-
-    print(f"\n🕒 Tiempo de ejecución ESTADOS VISITADOS: {fin - inicio:.4f} segundos")
-    print(f"📈 Memoria actual usada ESTADOS VISITADOS: {mem_actual / 1024:.2f} KB")
-    print(f"🚀 Pico de memoria ESTADOS VISITADOS: {mem_pico / 1024:.2f} KB")
-    """
-    
     soluciones = []
     visitados = set()
-
-    hanoi_backtracking_solucion_unica(torres_iniciales, total_discos, [], soluciones, visitados)
-    
-    print("-----------  SOLO BACKTRACKING ------------")
-    print(f"\n Total de soluciones encontradas: {len(soluciones)}")
+    print("\n----------- BACKTRACKING estados visitados ------------")
+    inicio = time.time()
+    hanoi_backtracking_estados_visitados(torres_iniciales, total_discos, [], soluciones, visitados)
+    fin = time.time()
+    print(f"Total de soluciones encontradas: {len(soluciones)}")
     soluciones.sort(key=len, reverse=True)
     # Mostrar soluciones
     for i, solucion in enumerate(soluciones, 1):
          print(f"\n🔹 Solución {i} ({len(solucion)} movimientos):")
          for mov in solucion:
              print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
-    # Mostrar cantidad de movimientos de cada solución
-    print("\n🔍 Resumen de soluciones:")
-    for i, solucion in enumerate(soluciones, 1):
-        print(f"🔹 Solución {i}: {len(solucion)} movimientos")
+    print(f"\n🕒 Tiempo de ejecución VISITADOS: {fin - inicio:.4f} segundos")
+    print("----------- fin BACKTRACKING estados visitados ------------")
 
-    print(f"\n Total de soluciones encontradas: {len(soluciones)}")
+    soluciones = []
+    visitados = set()
+    print("\n----------- BACKTRACKING solución única ------------")
+    inicio = time.time()
+    hanoi_backtracking_solucion_unica(torres_iniciales, total_discos, [], soluciones, visitados)
+    fin = time.time()
+    print(f"Total de soluciones encontradas: {len(soluciones)}")
+    soluciones.sort(key=len, reverse=True)
+    # Mostrar soluciones
+    for i, solucion in enumerate(soluciones, 1):
+         print(f"\n🔹 Solución {i} ({len(solucion)} movimientos):")
+         for mov in solucion:
+             print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
+    print(f"\n🕒 Tiempo de ejecución VISITADOS: {fin - inicio:.4f} segundos")
+    print("----------- fin BACKTRACKING solución única ------------")
+    
+    
+
+    print("\n----------- BRANCH & BOUND visitados ------------")
+    # ⏱️ Inicio de medición
+    #tracemalloc.start()
+    inicio = time.time()
+    solucion = hanoi_branch_and_bound_estados_visitados(torres_iniciales)
+    # ⏱️ Fin de medición
+    fin = time.time()
+    #mem_actual, mem_pico = tracemalloc.get_traced_memory()
+    #tracemalloc.stop()
+    print("Mejor solución encontrada VISITADOS:")
+    for i, mov in enumerate(solucion, 1):
+        print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
+    print(f"\n🕒 Tiempo de ejecución VISITADOS: {fin - inicio:.4f} segundos")
+    #print(f"📈 Memoria actual usada VISITADOS: {mem_actual / 1024:.2f} KB")
+    #print(f"🚀 Pico de memoria VISITADOS: {mem_pico / 1024:.2f} KB")
+    print("----------- fin BRANCH & BOUND visitados ------------")
+
+
+
+    print("\n----------- BRANCH & BOUND sin visitados ------------")
+    inicio = time.time()
+    solucion = hanoi_branch_and_bound_sin_visitados(torres_iniciales)
+    fin = time.time()
+    print("Mejor solución encontrada SIN VISITADOS:")
+    for i, mov in enumerate(solucion, 1):
+        print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
+    print(f"\n🕒 Tiempo de ejecución SIN VISITADOS: {fin - inicio:.4f} segundos")
+    print("----------- fin BRANCH & BOUND sin visitados ------------")
+    
