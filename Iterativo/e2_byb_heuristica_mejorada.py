@@ -72,14 +72,15 @@ def generar_movimientos_posibles(torres):
 
 def heuristica(torres):
     """
-    Heurística ponderada combinada:
-    - Para cada disco de tamaño i:
-      weight = 2**(i-1)
-    - Distancia del poste:
-      Origen   -> factor 2
-      Auxiliar -> factor 1
-      Destino  -> factor 0
-    Retorna la suma de weight * factor para todos los discos.
+    Calcula un valor heurístico para el estado actual de las Torres de Hanoi.
+    La heurística asigna una suma ponderada a los discos según su posición:
+    - Cada torre ('Origen', 'Auxiliar', 'Destino') tiene un factor (2, 1, 0 respectivamente).
+    - Cada disco aporta un peso exponencial (2^(tamaño del disco - 1)) multiplicado por el factor de la torre.
+    - El valor heurístico es la suma de todos los discos ponderados.
+    Args:
+        torres (dict): Diccionario que mapea los nombres de las torres ('Origen', 'Auxiliar', 'Destino') a listas (pilas) de objetos disco.
+    Returns:
+        int: El valor heurístico calculado para el estado dado.
     """
     factor_map = {'Origen': 2, 'Auxiliar': 1, 'Destino': 0}
     h = 0
@@ -93,10 +94,19 @@ def heuristica(torres):
 
 
 def hanoi_branch_and_bound(torres_iniciales):
+    """
+    Resuelve el problema de la Torre de Hanoi utilizando el algoritmo de Branch and Bound con heurística mejorada.
+    Args:
+        torres_iniciales (dict): Diccionario con las torres iniciales
+    Returns:
+        list: Una lista de tuplas representando la secuencia óptima de movimientos. Cada tupla es de la forma
+            (origen, destino, tamanio_disco), donde 'origen' y 'destino' son los nombres de las torres y
+            'tamanio_disco' es el tamaño del disco movido. Si no se encuentra solución, retorna None.
+    """
     total_discos = len(torres_iniciales['Origen'])
     nodos_vivos = []
     estado_ini = estado_serializado(torres_iniciales)
-    nodo_raiz = (heuristica(torres_iniciales, total_discos), copiar_torres(torres_iniciales), [], set([estado_ini]))
+    nodo_raiz = (heuristica(torres_iniciales), copiar_torres(torres_iniciales), [], set([estado_ini]))
     nodos_vivos.append(nodo_raiz)
 
     mejor_solucion = None
@@ -137,7 +147,7 @@ def hanoi_branch_and_bound(torres_iniciales):
             nuevo_visitados = visitados.copy()
             nuevo_visitados.add(nuevo_estado)
             nuevos_movs = movimientos + [(origen, destino, disco_en_nuevas_torres.tamanio)]
-            nuevo_costo = len(nuevos_movs) + heuristica(nuevas_torres, total_discos)
+            nuevo_costo = len(nuevos_movs) + heuristica(nuevas_torres)
 
             
             nodos_vivos.append((nuevo_costo, nuevas_torres, nuevos_movs, nuevo_visitados))
