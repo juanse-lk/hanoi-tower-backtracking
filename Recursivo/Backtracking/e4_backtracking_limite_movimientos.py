@@ -40,9 +40,7 @@ def estado_serializado(torres):
 
 
 def hanoi_backtracking(torres, total_discos, movimientos, soluciones, max_movimientos_permitidos):
-    if soluciones:
-        return
-    
+   
     if len(movimientos) > max_movimientos_permitidos:
         return  # Corte por exceso de movimientos
 
