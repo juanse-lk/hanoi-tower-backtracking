@@ -76,7 +76,7 @@ def generar_movimientos_posibles(torres):
 
 def heuristica_prioridad_discos_pequenos(torres):
     """
-    Heurística del enunciado: Chequea cuántos discos están ordenados en la torre de destino.
+    Heurística: Chequea cuántos discos están ordenados en la torre de destino.
     
     Una heurística común prioriza mover los discos más pequeños primero porque:
     * Permite liberar los discos más grandes
@@ -101,13 +101,21 @@ def heuristica_prioridad_discos_pequenos(torres):
 
 
 def hanoi_branch_and_bound_sin_visitados(torres_iniciales):
+    """
+    Qué hace: Igual que el anterior, pero no evita repetir estados, lo cual puede hacer que explore más de lo necesario.
+
+    Complejidad temporal: Más alta que el branch and bound con visitados, pero aún mejor que un backtracking puro.
+
+    En palabras: Rápido en muchos casos, pero puede perder tiempo repitiendo caminos ya vistos.
+    """
     total_discos = len(torres_iniciales['Origen'])
     nodos_vivos = []
+    #genera una tupla con 3 valores: el número que devuelve la función de heuristica, una copia del diccionario de las torres y un array de movimientos vacios
     nodo_raiz = (heuristica_prioridad_discos_pequenos(torres_iniciales), copiar_torres(torres_iniciales), [])
     nodos_vivos.append(nodo_raiz)
 
     mejor_solucion = None
-    max_movimientos = 2 ** total_discos
+    max_movimientos = 2 ** total_discos# 2 elevado a la cantidad de discos, es un corte que hicimos para evitar loopear infinitamente
 
     while nodos_vivos:
         # Ramificación: ordenar por heurística + profundidad
@@ -145,6 +153,13 @@ def hanoi_branch_and_bound_sin_visitados(torres_iniciales):
 
 
 def hanoi_branch_and_bound_estados_visitados(torres_iniciales):
+    """
+    Qué hace: Usa una heurística para priorizar los caminos que parecen mejores y evita repetir estados.
+
+    Complejidad temporal: Más baja que el backtracking. Depende de qué tan buena sea la heurística y de cuántos caminos se podan.
+
+    En palabras: Mucho más inteligente, porque elige primero los caminos prometedores y descarta muchos otros innecesarios.
+    """
     total_discos = len(torres_iniciales['Origen'])
     nodos_vivos = []
     estado_ini = estado_serializado(torres_iniciales)
@@ -198,16 +213,11 @@ def hanoi_branch_and_bound_estados_visitados(torres_iniciales):
 
 def hanoi_backtracking_solucion_unica(torres, total_discos, movimientos, soluciones, visitados):
     """
-    Resuelve el problema de la Torre de Hanoi utilizando backtracking, almacenando todas las soluciones posibles.
-    
-    Args:
-        torres (dict): Diccionario con las torres como claves y listas de discos como valores.
-        total_discos (int): Número total de discos a mover.
-        movimientos (list): Lista de movimientos realizados hasta el momento, cada uno como una tupla (origen, destino, tamaño).
-        soluciones (list): Lista donde se almacenan todas las soluciones encontradas, cada una como una lista de movimientos.
-        visitados (set): Conjunto de estados serializados ya visitados para evitar ciclos y repeticiones.
-    Returns:
-        None: Las soluciones se almacenan en el parámetro 'soluciones' pasado por referencia.
+    Qué hace: Igual que el anterior, pero se detiene apenas encuentra una solución válida.
+
+    Complejidad temporal: Sigue siendo alta, pero más eficiente que el anterior si la primera solución se encuentra rápido.
+
+    En palabras: Puede ser más rápido que el anterior porque no busca todas las soluciones, solo una.
     """
     estado_actual = estado_serializado(torres)
 
@@ -270,16 +280,11 @@ def hanoi_backtracking_solucion_unica(torres, total_discos, movimientos, solucio
 
 def hanoi_backtracking_estados_visitados(torres, total_discos, movimientos, soluciones, visitados):
     """
-    Resuelve el problema de la Torre de Hanoi utilizando backtracking, almacenando todas las soluciones posibles.
-    
-    Args:
-        torres (dict): Diccionario con las torres como claves y listas de discos como valores.
-        total_discos (int): Número total de discos a mover.
-        movimientos (list): Lista de movimientos realizados hasta el momento, cada uno como una tupla (origen, destino, tamaño).
-        soluciones (list): Lista donde se almacenan todas las soluciones encontradas, cada una como una lista de movimientos.
-        visitados (set): Conjunto de estados serializados ya visitados para evitar ciclos y repeticiones.
-    Returns:
-        None: Las soluciones se almacenan en el parámetro 'soluciones' pasado por referencia.
+    Qué hace: Explora todas las formas posibles de resolver el problema, evitando repetir estados ya visitados.
+
+    Complejidad temporal: Muy alta, porque prueba casi todas las combinaciones posibles, aunque evita algunas repeticiones.
+
+    En palabras: Tarda muchísimo tiempo porque explora casi todos los caminos posibles, pero se ahorra algo de tiempo al no repetir configuraciones que ya probó.
     """
     estado_actual = estado_serializado(torres)
 
@@ -290,6 +295,7 @@ def hanoi_backtracking_estados_visitados(torres, total_discos, movimientos, solu
     visitados.add(estado_actual)
 
     # Verificar si se ha alcanzado la solución
+    # vemos cuantos discos hay en la torre destino y verifica si es igual al total de discos
     if len(torres["Destino"]) == total_discos:
         soluciones.append(list(movimientos))
         visitados.remove(estado_actual)
@@ -307,7 +313,7 @@ def hanoi_backtracking_estados_visitados(torres, total_discos, movimientos, solu
             # No mover el disco a la misma torre de origen
             if origen == destino:
                 continue
-            # No moever a una torre que ya tiene un disco más grande en la parte superior
+            # No mover a una torre que ya tiene un disco más grande en la parte superior
             if torres[destino] and torres[destino][-1].tamanio < disco.tamanio:
                 continue
             # No mover si el disco no puede moverse
@@ -317,7 +323,7 @@ def hanoi_backtracking_estados_visitados(torres, total_discos, movimientos, solu
             # Mover disco
             torres[origen].pop()
             torres[destino].append(disco)
-            disco.mover()
+            disco.mover()# solamente incrementa los movimientos del disco( solo es útil para DiscoFragil)
 
             # Registrar el movimiento
             movimientos.append((origen, destino, disco.tamanio))
@@ -356,6 +362,7 @@ if __name__ == "__main__":
     inicio = time.time()
     hanoi_backtracking_estados_visitados(torres_iniciales, total_discos, [], soluciones, visitados)
     fin = time.time()
+    movimientos_bt_visitados = [len(sol) for sol in soluciones]
     print(f"Total de soluciones encontradas: {len(soluciones)}")
     soluciones.sort(key=len, reverse=True)
     # Mostrar soluciones
@@ -364,7 +371,12 @@ if __name__ == "__main__":
          for mov in solucion:
              print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
     print(f"\n🕒 Tiempo de ejecución VISITADOS: {fin - inicio:.4f} segundos")
+    if movimientos_bt_visitados:
+        print(f"\n🔢 Soluciones: {len(movimientos_bt_visitados)} | Mínimos movimientos: {min(movimientos_bt_visitados)} | Promedio: {sum(movimientos_bt_visitados)/len(movimientos_bt_visitados):.2f}")
+    print("🧮 Complejidad esperada: O(2^n)")
     print("----------- fin BACKTRACKING estados visitados ------------")
+
+
 
     soluciones = []
     visitados = set()
@@ -372,6 +384,7 @@ if __name__ == "__main__":
     inicio = time.time()
     hanoi_backtracking_solucion_unica(torres_iniciales, total_discos, [], soluciones, visitados)
     fin = time.time()
+    movimientos_bt_unica = [len(sol) for sol in soluciones]
     print(f"Total de soluciones encontradas: {len(soluciones)}")
     soluciones.sort(key=len, reverse=True)
     # Mostrar soluciones
@@ -380,6 +393,9 @@ if __name__ == "__main__":
          for mov in solucion:
              print(f"{mov[0]} → {mov[1]} | Disco {mov[2]}")
     print(f"\n🕒 Tiempo de ejecución VISITADOS: {fin - inicio:.4f} segundos")
+    if movimientos_bt_unica:
+        print(f"\n🔢 Soluciones: {len(movimientos_bt_unica)} | Mínimos movimientos: {min(movimientos_bt_unica)} | Promedio: {sum(movimientos_bt_unica)/len(movimientos_bt_unica):.2f}")
+    print("🧮 Complejidad esperada: O(2^n)")
     print("----------- fin BACKTRACKING solución única ------------")
     
     
@@ -399,6 +415,8 @@ if __name__ == "__main__":
     print(f"\n🕒 Tiempo de ejecución VISITADOS: {fin - inicio:.4f} segundos")
     #print(f"📈 Memoria actual usada VISITADOS: {mem_actual / 1024:.2f} KB")
     #print(f"🚀 Pico de memoria VISITADOS: {mem_pico / 1024:.2f} KB")
+    print(f"\n🔢 Total de movimientos: {len(solucion)}")
+    print("🧮 Complejidad esperada: O(b^d) donde b = branching factor y d = profundidad")
     print("----------- fin BRANCH & BOUND visitados ------------")
 
 
@@ -411,5 +429,7 @@ if __name__ == "__main__":
     for i, mov in enumerate(solucion, 1):
         print(f"{i}. Mover disco {mov[2]} de {mov[0]} a {mov[1]}")
     print(f"\n🕒 Tiempo de ejecución SIN VISITADOS: {fin - inicio:.4f} segundos")
+    print(f"\n🔢 Total de movimientos: {len(solucion)}")
+    print("🧮 Complejidad esperada: O(b^d) sin poda de estados repetidos")
     print("----------- fin BRANCH & BOUND sin visitados ------------")
     
