@@ -54,7 +54,7 @@ def copiar_torres(torres):
 ### PRUEBAS
 # Creo los discos y torres
 torres_iniciales = {
-    "Origen": [Disco(2), Disco(1)],
+    "Origen": [Disco(4), Disco(3), Disco(2), Disco(1)],
     "Auxiliar": [],
     "Destino": []
 }
